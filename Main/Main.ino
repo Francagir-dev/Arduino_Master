@@ -1,62 +1,74 @@
-#include <tone.h>
-
-// Creamos un objeto "Tone" y lo asignamos al pin 8
-Tone myTone(8);
-
-// Definimos las notas de la canción en un arreglo
-int notes[] = {
-  NOTE_G4, NOTE_A4, NOTE_G4, NOTE_F4,
-  NOTE_E4, NOTE_D4, NOTE_C4,
-  NOTE_G4, NOTE_A4, NOTE_G4, NOTE_F4,
-  NOTE_E4, NOTE_D4, NOTE_C4,
-  NOTE_C4, NOTE_D4, NOTE_E4,
-  NOTE_C4, NOTE_D4, NOTE_E4,
-  NOTE_F4, NOTE_G4, NOTE_A4,
-  NOTE_F4, NOTE_G4, NOTE_A4,
-  NOTE_G4, NOTE_A4, NOTE_B4,
-  NOTE_G4, NOTE_A4, NOTE_B4,
-  NOTE_C5, NOTE_D5, NOTE_E5,
-  NOTE_C5, NOTE_D5, NOTE_E5
-};
-
-// Definimos los tiempos de cada nota en un arreglo
-int beats[] = {
-  2, 2, 2, 2,
-  2, 2, 4,
-  2, 2, 2, 2,
-  2, 2, 4,
-  2, 2, 2,
-  2, 2, 2,
-  2, 2, 2,
-  2, 2, 2,
-  2, 2, 2,
-  2, 2, 2,
-  2, 2, 2,
-  2, 2, 2
-};
-
-// Definimos la duración de cada silencio (en milisegundos)
-int pause = 500;
-
-// Definimos la duración de cada nota (en milisegundos)
-int noteDuration = 250;
-
+const int estela1 = 3;
+const int estela2 = 4;
+const int estela3 = 5;
+const int nube1 = 6;
+const int nube2 = 7;
+const int nube3 = 8;
+const int buzzer = 9;
+const int gohan1 = 10;
+const int gohan2 = 11;
+const int gohan3 = 12;
+const int gohan4 = 13;
+const int delayEstela = 100;
+const int delayNube = 250;
+const int delayGohan = 10;
 void setup() {
-  // Inicializamos el parlante
-  myTone.begin();
+  setUpLEDS();
+  pinMode(buzzer, OUTPUT);
 }
 
 void loop() {
-  // Recorremos el arreglo de notas y tiempos
-  for (int i = 0; i < 30; i++) {
-    // Reproducimos la nota actual
-    myTone.play(notes[i], noteDuration);
-
-    // Esperamos el tiempo correspondiente
-    delay(beats[i] * noteDuration);
-
-    // Reproducimos un silencio
-    myTone.play(0, pause);
-  }
+  estelaLEDS();
+  nubeLEDS();
+  bolaLEDS();
 }
-</tone.h>
+
+
+void setUpLEDS() {
+  pinMode(estela1, OUTPUT);
+  pinMode(estela2, OUTPUT);
+  pinMode(estela3, OUTPUT);
+  pinMode(nube1, OUTPUT);
+  pinMode(nube2, OUTPUT);
+  pinMode(nube3, OUTPUT);
+  pinMode(gohan1, OUTPUT);
+  pinMode(gohan2, OUTPUT);
+  pinMode(gohan3, OUTPUT);
+  pinMode(gohan4, OUTPUT);
+}
+void estelaLEDS() {
+  digitalWrite(estela3, LOW);
+  digitalWrite(estela1, HIGH);
+  delay(delayEstela);
+  digitalWrite(estela1, LOW);
+  digitalWrite(estela2, HIGH);
+  delay(delayEstela);
+  digitalWrite(estela2, LOW);
+  digitalWrite(estela3, HIGH);
+  delay(delayEstela);
+}
+
+void nubeLEDS() {
+  digitalWrite(nube3, LOW);
+  digitalWrite(nube1, HIGH);
+  delay(delayNube);
+  digitalWrite(nube1, LOW);
+  digitalWrite(nube2, HIGH);
+  delay(delayNube);
+  digitalWrite(nube2, LOW);
+  digitalWrite(nube3, HIGH);
+  delay(delayNube);
+}
+
+void bolaLEDS() {
+  digitalWrite(gohan1, HIGH);
+  digitalWrite(gohan2, HIGH);
+  digitalWrite(gohan3, HIGH);
+  digitalWrite(gohan4, HIGH);
+  delay(delayGohan);
+  digitalWrite(gohan1, LOW);
+  digitalWrite(gohan2, LOW);
+  digitalWrite(gohan3, LOW);
+  digitalWrite(gohan4, LOW);
+  delay(delayGohan * 10);
+}
