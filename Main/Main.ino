@@ -1,74 +1,88 @@
-const int estela1 = 3;
-const int estela2 = 4;
-const int estela3 = 5;
-const int nube1 = 6;
-const int nube2 = 7;
-const int nube3 = 8;
-const int buzzer = 9;
-const int gohan1 = 10;
-const int gohan2 = 11;
-const int gohan3 = 12;
-const int gohan4 = 13;
-const int delayEstela = 100;
-const int delayNube = 250;
-const int delayGohan = 10;
+//PINES DE LED
+const int ledEstela[] = { 3, 4, 5 };
+const int sizeEstela = 3;
+bool pasoNube = false;
+
+const int ledNube[] = { 6, 7, 8 };
+const int sizeNube = 3;
+
+const int ledGohan[] = { 10, 11, 12, 13 };
+const int sizeGohan = 4;
+
+//Tiempos
+const long delayEstela = 100;
+const long delayNube = 250;
+const long delayGohan = 10;
+
+//Control interno
+unsigned long last1 = 0;
+
+
+unsigned long last2 = 0;
+bool estado2 = LOW;
+
+unsigned long last3 = 0;
+int index3 = 0;
 void setup() {
-  setUpLEDS();
-  pinMode(buzzer, OUTPUT);
+  //ESTELA
+  for (int i = 0; i < sizeEstela; i++)
+    pinMode(ledEstela[i], OUTPUT);
+
+  //NUBE
+  for (int i = 0; i < sizeNube; i++)
+    pinMode(ledNube[i], OUTPUT);
+
+  //Gohan (BOLA)
+  for (int i = 0; i < sizeGohan; i++)
+    pinMode(ledGohan[i], OUTPUT);
 }
 
 void loop() {
-  estelaLEDS();
-  nubeLEDS();
-  bolaLEDS();
-}
+
+  unsigned long ahora = millis();
 
 
-void setUpLEDS() {
-  pinMode(estela1, OUTPUT);
-  pinMode(estela2, OUTPUT);
-  pinMode(estela3, OUTPUT);
-  pinMode(nube1, OUTPUT);
-  pinMode(nube2, OUTPUT);
-  pinMode(nube3, OUTPUT);
-  pinMode(gohan1, OUTPUT);
-  pinMode(gohan2, OUTPUT);
-  pinMode(gohan3, OUTPUT);
-  pinMode(gohan4, OUTPUT);
-}
-void estelaLEDS() {
-  digitalWrite(estela3, LOW);
-  digitalWrite(estela1, HIGH);
-  delay(delayEstela);
-  digitalWrite(estela1, LOW);
-  digitalWrite(estela2, HIGH);
-  delay(delayEstela);
-  digitalWrite(estela2, LOW);
-  digitalWrite(estela3, HIGH);
-  delay(delayEstela);
-}
+  // ========== GRUPO 1: SECUENCIA ==========
+  if (ahora - last1 >= delayNube) {
 
-void nubeLEDS() {
-  digitalWrite(nube3, LOW);
-  digitalWrite(nube1, HIGH);
-  delay(delayNube);
-  digitalWrite(nube1, LOW);
-  digitalWrite(nube2, HIGH);
-  delay(delayNube);
-  digitalWrite(nube2, LOW);
-  digitalWrite(nube3, HIGH);
-  delay(delayNube);
-}
+    if (!pasoNube) {
+      digitalWrite(ledNube[0], HIGH);
+      digitalWrite(ledNube[1], LOW);
+      digitalWrite(ledNube[2], LOW);
+    } else {
+      digitalWrite(ledNube[0], LOW);
+      digitalWrite(ledNube[1], HIGH);
+      digitalWrite(ledNube[2], HIGH);
+    }
+    pasoNube = !pasoNube;
+    last1 = ahora;
+  }
 
-void bolaLEDS() {
-  digitalWrite(gohan1, HIGH);
-  digitalWrite(gohan2, HIGH);
-  digitalWrite(gohan3, HIGH);
-  digitalWrite(gohan4, HIGH);
-  delay(delayGohan);
-  digitalWrite(gohan1, LOW);
-  digitalWrite(gohan2, LOW);
-  digitalWrite(gohan3, LOW);
-  digitalWrite(gohan4, LOW);
-  delay(delayGohan * 10);
+
+
+  // ========== GRUPO 2: PARPADEO GENERAL ==========
+  if (ahora - last2 >= delayGohan) {
+    estado2 = !estado2;
+
+    for (int i = 0; i < sizeGohan; i++)
+      digitalWrite(ledGohan[i], estado2);
+
+    last2 = ahora;
+  }
+
+
+
+  // ========== GRUPO 3: SECUENCIA RÁPIDA ==========
+  if (ahora - last3 >= delayEstela) {
+    // Apagar todos
+    for (int i = 0; i < sizeEstela; i++) digitalWrite(ledEstela[i], LOW);
+
+    // Encender siguiente
+    digitalWrite(ledEstela[index3], HIGH);
+
+    // Avanzar índice
+    index3 = (index3 + 1) % sizeEstela;
+
+    last3 = ahora;
+  }
 }
