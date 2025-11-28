@@ -1,3 +1,5 @@
+#include "pitches.h"
+
 //PINES DE LED
 const int ledEstela[] = { 3, 4, 5 };
 const int sizeEstela = 3;
@@ -23,6 +25,73 @@ bool estado2 = LOW;
 
 unsigned long last3 = 0;
 int index3 = 0;
+
+
+const int piezo = 9; 
+int notes[] = {
+  NOTE_G4, NOTE_A4, NOTE_G4, NOTE_F4,
+  NOTE_E4, NOTE_D4, NOTE_C4,
+  NOTE_G4, NOTE_A4, NOTE_G4, NOTE_F4,
+  NOTE_E4, NOTE_D4, NOTE_C4,
+  NOTE_C4, NOTE_D4, NOTE_E4,
+  NOTE_C4, NOTE_D4, NOTE_E4,
+  NOTE_F4, NOTE_G4, NOTE_A4,
+  NOTE_F4, NOTE_G4, NOTE_A4,
+  NOTE_G4, NOTE_A4, NOTE_B4,
+  NOTE_G4, NOTE_A4, NOTE_B4,
+  NOTE_C5, NOTE_D5, NOTE_E5,
+  NOTE_C5, NOTE_D5, NOTE_E5
+};
+
+int beats[] = {
+  2,2,2,2,
+  2,2,4,
+  2,2,2,2,
+  2,2,4,
+  2,2,2,
+  2,2,2,
+  2,2,2,
+  2,2,2,
+  2,2,2,
+  2,2,2,
+  2,2,2,
+  2,2,2
+};
+
+int numNotes = sizeof(notes)/sizeof(notes[0]);
+
+// Duración base de cada beat
+int beatDuration = 250;
+
+
+// ---------- VARIABLES DE TIEMPO ----------
+unsigned long lastNoteTime = 0;
+int currentNote = 0;
+bool notePlaying = false;
+
+void playMelody() {
+  unsigned long now = millis();
+
+  if (!notePlaying) {
+    // Empieza nota
+    int duration = beats[currentNote] * beatDuration;
+    tone(piezo, notes[currentNote], duration);
+    lastNoteTime = now;
+    notePlaying = true;
+  } else {
+    // Si pasó el tiempo de esta nota, pasa a la siguiente
+    int duration = beats[currentNote] * beatDuration * 1.3;  // margen
+    if (now - lastNoteTime >= duration) {
+      currentNote++;
+
+      if (currentNote >= numNotes)
+        currentNote = 0; // volver a empezar la canción
+
+      notePlaying = false;
+    }
+  }
+}
+
 void setup() {
   //ESTELA
   for (int i = 0; i < sizeEstela; i++)
@@ -35,6 +104,8 @@ void setup() {
   //Gohan (BOLA)
   for (int i = 0; i < sizeGohan; i++)
     pinMode(ledGohan[i], OUTPUT);
+
+  playMelody();
 }
 
 void loop() {
